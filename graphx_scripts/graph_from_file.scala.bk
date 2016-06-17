@@ -1,0 +1,32 @@
+import org.apache.spark.graphx._
+import org.apache.spark.rdd.RDD
+import org.apache.spark.SparkConf
+import org.apache.spark.SparkContext
+
+
+class Graph_User {
+  def main(args: Array[String]) {
+
+    //create SparkContext
+    val sparkConf = new SparkConf().setAppName("GraphFromFile").setMaster("local[*]")
+    val sc = new SparkContext(sparkConf)
+
+    val vtextRDD = sc.textFile("/tmp/nodes_pokec.csv")
+    val edgetextRDD = sc.textFile("/tmp/relationships.csv")
+    // MapPartitionsRDD[1] at textFile
+
+    val vertexRDD: RDD[(VertexId)] = vtextRDD.map(line)
+
+   val eRDD: RDD[Edge[(VertexId, VertexId)]] = edgetextRDD.map(line => {
+  line.split(",", 2) match {
+    case Array(n1, n2) => Edge(n1.toLong, n2.toLong)
+  }
+i})
+
+    val graph = Graph(vertexRDD, eRDD)
+    
+  }
+
+
+}
+
